@@ -143,32 +143,10 @@ def main():
     # Note: data tensors should have shape [2n, 224, 224, 3] and type uint8 (i.e.,
     # n pairs of 224x224 3-channel (RGB) images), and the label vectors should have
     # shape [n], containing the speed bucket for each pair of images.
-    #train_data = np.load('/data/X_train.npy').reshape((-1, 2, 224, 224, 3))
-    #train_labels = np.load('/data/y_train.npy')
+    train_data = np.load('/data/X_train.npy').reshape((-1, 2, 224, 224, 3))
+    train_labels = np.load('/data/y_train.npy')
     test_data = np.load('/data/X_test.npy').reshape((-1, 2, 224, 224, 3))
     test_labels = np.load('/data/y_test.npy')
-    
-    normy_index = 17
-    pair = test_data[normy_index, :, :, :, :]
-    mappy = get_gradient_map(pair, test_labels[normy_index])
-    mappy = mappy[0, :, :, :, :]
-    mappy_norms = np.linalg.norm(mappy, ord=2, axis=3)
-    mappy_norms /= np.max(mappy_norms)
-    mappy_norms = (mappy_norms * 255).astype('uint8')
-    mappy_norms = np.expand_dims(mappy_norms, axis=3)
-    mappy_norms = np.repeat(mappy_norms, 3, axis=3)
-    
-    im0 = Image.fromarray(pair[0, :, :, :])
-    im1 = Image.fromarray(pair[1, :, :, :])
-    map0 = Image.fromarray(mappy_norms[0, :, :, :])
-    map1 = Image.fromarray(mappy_norms[1, :, :, :])
-    im0.save('im0.png')
-    im1.save('im1.png')
-    map0.save('map0.png')
-    map1.save('map1.png')
-    
-    # Cut off here.
-    return
 
     # Create the Estimator
     config = tf.estimator.RunConfig(save_checkpoints_secs=60)
@@ -187,7 +165,6 @@ def main():
     }
     logging = tf.train.LoggingTensorHook(log_targets, every_n_iter=50)
 
-    '''
     # Create a training function using the training data set above.
     input_fn = tf.estimator.inputs.numpy_input_fn(
         x={'images': train_data},
@@ -199,7 +176,6 @@ def main():
 
     # Run training.
     v2s_classifier.train(input_fn, steps=20000, hooks=[logging])
-    '''
     
     # Create an evaluation function using the test data set above.
     input_fn = tf.estimator.inputs.numpy_input_fn(
@@ -212,9 +188,6 @@ def main():
 
     # Run training.
     v2s_classifier.evaluate(input_fn, hooks=[logging])
-    
-    
-    
 
 if __name__ == '__main__':
     main()
