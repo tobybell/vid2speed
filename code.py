@@ -186,7 +186,7 @@ def main():
         shuffle=False
     )
 
-    # Run training.
+    # Run testing.
     v2s_classifier.evaluate(input_fn, hooks=[logging])
 
 if __name__ == '__main__':
